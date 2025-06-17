@@ -399,13 +399,13 @@ withItemMoreAttrs attrs config =
 {-| Custom item element HTML
 
     config
-        |> Select.withItemHtml (\i -> Html.li [] [ text i ])
+        |> Select.withItemHtml (\query item -> Html.li [] [ text item ])
 
 When this is used the original `toLabel` function in the config is ignored.
 
 -}
 withItemHtml :
-    (item -> Html msg)
+    (Maybe String -> item -> Html msg)
     -> Config msg item
     -> Config msg item
 withItemHtml html config =

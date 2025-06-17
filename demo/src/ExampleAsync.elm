@@ -57,8 +57,8 @@ type Msg
     | OnQuery String
 
 
-itemHtml : Character -> Html msg
-itemHtml c =
+itemHtml : Maybe String -> Character -> Html msg
+itemHtml _ c =
     Html.div []
         [ Html.i [ class "fa fa-rebel" ] []
         , text (" " ++ c)

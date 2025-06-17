@@ -47,7 +47,7 @@ view config state itemCount selectedItems index item =
                     text label
 
                 Just fn ->
-                    fn item
+                    fn state.query item
     in
     div
         ([ class classNames.menuItem

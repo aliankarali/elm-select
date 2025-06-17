@@ -34,11 +34,11 @@ type alias Config msg item =
     , inputWrapperAttrs : List (Attribute msg)
     , isMultiSelect : Bool
     , itemAttrs : List (Attribute msg)
-    , itemHtml : Maybe (item -> Html msg)
+    , itemHtml : Maybe (Maybe String -> item -> Html msg)
     , menuAttrs : List (Attribute msg)
     , multiInputItemAttrs : List (Attribute msg)
     , multiInputItemContainerAttrs : List (Attribute msg)
-    , multiInputItemRemovable: Maybe (item -> Bool)
+    , multiInputItemRemovable : Maybe (item -> Bool)
     , notFound : String
     , notFoundAttrs : List (Attribute msg)
     , notFoundShown : Bool
