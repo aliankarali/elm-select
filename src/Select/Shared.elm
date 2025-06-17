@@ -2,10 +2,7 @@ module Select.Shared exposing
     ( classNames
     , difference
     , inputAttributes
-    ,  onClickWithoutPropagation
-       -- , onKeyPressAttribute
-       -- , onKeyUpAttribute
-
+    , onClickWithoutPropagation
     , referenceAttr
     , referenceDataName
     , splitWithSeparators
