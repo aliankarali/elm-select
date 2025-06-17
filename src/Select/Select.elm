@@ -1,9 +1,8 @@
 module Select.Select exposing (view)
 
-import Html exposing (..)
-import Html.Attributes exposing (class, id, style)
+import Html exposing (Html, div)
+import Html.Attributes exposing (class, id)
 import Select.Config exposing (Config)
-import Select.Messages exposing (..)
 import Select.Models exposing (State)
 import Select.Search as Search
 import Select.Select.Input
@@ -14,6 +13,7 @@ import Select.Shared as Shared exposing (classNames)
 view : Config msg item -> State -> List item -> List item -> Html msg
 view config state availableItems selectedItems =
     let
+        availableItemsWithCustom : List item
         availableItemsWithCustom =
             case config.customInput of
                 Nothing ->
@@ -50,9 +50,11 @@ view config state availableItems selectedItems =
                 selectedItems
     in
     div
-        [ id state.id
-        , class classNames.root
-        ]
+        ([ id state.id
+         , class classNames.root
+         ]
+            ++ config.rootAttrs
+        )
         [ Select.Select.Input.view
             config
             state

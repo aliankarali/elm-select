@@ -17,7 +17,7 @@ movies =
     List.map (\( id, name ) -> Movie id name) moviesDB
 
 
-moviesDB : List (String, String)
+moviesDB : List ( String, String )
 moviesDB =
     [ ( "1", "Avatar (2009)" )
     , ( "2", "Titanic (1997)" )

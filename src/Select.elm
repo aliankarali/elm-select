@@ -1,12 +1,13 @@
 module Select exposing
     ( RequiredConfig, Config, State, Msg
-    , newConfig, withCustomInput, withCutoff, withOnQuery, withEmptySearch, withTransformQuery, withTransformInput
+    , newConfig, withCustomInput, withCutoff, withOnQuery, withEmptySearch, withPreserveQueryOnFocus, withTransformQuery, withTransformInput
     , withMultiSelection, withOnRemoveItem, withMultiInputItemContainerAttrs, withMultiInputItemContainerMoreAttrs, withMultiInputItemAttrs, withMultiInputItemMoreAttrs, withMultiInputItemRemovable
     , withInputWrapperAttrs, withInputWrapperMoreAttrs
-    , withInputAttrs, withInputMoreAttrs, withOnFocus, withOnBlur, withOnEsc, withValueSeparators
+    , withInputAttrs, withInputMoreAttrs, withOnFocus, withOnBlur, withOnEsc, withOnArrowUp, withOnArrowDown, withValueSeparators
     , withClear, withClearAttrs, withClearMoreAttrs, withClearSvgClass, withClearHtml
     , withItemAttrs, withItemMoreAttrs, withItemHtml, withHighlightedItemAttrs, withHighlightedItemMoreAttrs, withItemSelectedAttrs, withItemSelectedMoreAttrs
     , withMenuAttrs, withMenuMoreAttrs
+    , withRootAttrs, withRootMoreAttrs
     , withNotFound, withNotFoundAttrs, withNotFoundMoreAttrs, withNotFoundShown
     , withPrompt, withPromptAttrs, withPromptMoreAttrs
     , init, queryFromState, withQuery
@@ -30,7 +31,7 @@ See live demo [here](https://sporto.github.io/elm-select)
 
 # Configuration
 
-@docs newConfig, withCustomInput, withCutoff, withOnQuery, withEmptySearch, withTransformQuery, withTransformInput
+@docs newConfig, withCustomInput, withCutoff, withOnQuery, withEmptySearch, withPreserveQueryOnFocus, withTransformQuery, withTransformInput
 
 
 # Configure Multi Select mode
@@ -47,7 +48,7 @@ This is the element that wraps the selected item(s) and the input
 
 # Configure the input
 
-@docs withInputAttrs, withInputMoreAttrs, withOnFocus, withOnBlur, withOnEsc, withValueSeparators
+@docs withInputAttrs, withInputMoreAttrs, withOnFocus, withOnBlur, withOnEsc, withOnArrowUp, withOnArrowDown, withValueSeparators
 
 
 # Configure the clear button
@@ -63,6 +64,11 @@ This is the element that wraps the selected item(s) and the input
 # Configure the menu
 
 @docs withMenuAttrs, withMenuMoreAttrs
+
+
+# Configure the root container
+
+@docs withRootAttrs, withRootMoreAttrs
 
 
 # Configure the not found message
@@ -91,7 +97,7 @@ This is the element that wraps the selected item(s) and the input
 
 -}
 
-import Html exposing (..)
+import Html exposing (Attribute, Html)
 import Select.Config as Config
 import Select.Messages as Messages
 import Select.Models as Models
@@ -158,6 +164,24 @@ withEmptySearch emptySearch config =
     let
         fn c =
             { c | emptySearch = emptySearch }
+    in
+    mapConfig fn config
+
+
+{-| Preserve the current query when the input receives focus.
+When True, clicking on the input will not clear the existing query.
+When False, clicking on the input will clear the query if emptySearch is enabled.
+
+Default is False.
+
+    Select.withPreserveQueryOnFocus True config
+
+-}
+withPreserveQueryOnFocus : Bool -> Config msg item -> Config msg item
+withPreserveQueryOnFocus preserveQueryOnFocus config =
+    let
+        fn c =
+            { c | preserveQueryOnFocus = preserveQueryOnFocus }
     in
     mapConfig fn config
 
@@ -393,13 +417,13 @@ withItemMoreAttrs attrs config =
 {-| Custom item element HTML
 
     config
-        |> Select.withItemHtml (\i -> Html.li [] [ text i ])
+        |> Select.withItemHtml (\query item -> Html.li [] [ text item ])
 
 When this is used the original `toLabel` function in the config is ignored.
 
 -}
 withItemHtml :
-    (item -> Html msg)
+    (Maybe String -> item -> Html msg)
     -> Config msg item
     -> Config msg item
 withItemHtml html config =
@@ -634,6 +658,44 @@ withNotFoundShown shown config =
     mapConfig fn config
 
 
+{-| Set attributes for the root container.
+This overrides any attributes already set in a previous call.
+
+    config
+        |> Select.withRootAttrs [ class "bg-white" ]
+
+-}
+withRootAttrs :
+    List (Attribute msg)
+    -> Config msg item
+    -> Config msg item
+withRootAttrs attrs config =
+    let
+        fn c =
+            { c | rootAttrs = attrs }
+    in
+    mapConfig fn config
+
+
+{-| Add attributes to the root container.
+This adds to existing attributes.
+
+    config
+        |> Select.withRootMoreAttrs [ class "bg-white" ]
+
+-}
+withRootMoreAttrs :
+    List (Attribute msg)
+    -> Config msg item
+    -> Config msg item
+withRootMoreAttrs attrs config =
+    let
+        fn c =
+            { c | rootAttrs = c.rootAttrs ++ attrs }
+    in
+    mapConfig fn config
+
+
 {-| Set attributes for the hightlighted item.
 
     config
@@ -762,6 +824,36 @@ withOnEsc msg config =
     let
         fn c =
             { c | onEsc = Just msg }
+    in
+    mapConfig fn config
+
+
+{-| Add a callback for when the Up Arrow key is pressed.
+
+    config
+        |> Select.withOnArrowUp OnArrowUp
+
+-}
+withOnArrowUp : msg -> Config msg item -> Config msg item
+withOnArrowUp msg config =
+    let
+        fn c =
+            { c | onArrowUp = Just msg }
+    in
+    mapConfig fn config
+
+
+{-| Add a callback for when the Down Arrow key is pressed.
+
+    config
+        |> Select.withOnArrowDown OnArrowDown
+
+-}
+withOnArrowDown : msg -> Config msg item -> Config msg item
+withOnArrowDown msg config =
+    let
+        fn c =
+            { c | onArrowDown = Just msg }
     in
     mapConfig fn config
 
@@ -968,8 +1060,7 @@ update config msg model =
 
         model_ =
             unwrapModel model
-    in
-    let
+
         ( mdl, cmd ) =
             Select.Update.update config_ msg_ model_
     in

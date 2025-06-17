@@ -34,23 +34,27 @@ type alias Config msg item =
     , inputWrapperAttrs : List (Attribute msg)
     , isMultiSelect : Bool
     , itemAttrs : List (Attribute msg)
-    , itemHtml : Maybe (item -> Html msg)
+    , itemHtml : Maybe (Maybe String -> item -> Html msg)
     , menuAttrs : List (Attribute msg)
     , multiInputItemAttrs : List (Attribute msg)
     , multiInputItemContainerAttrs : List (Attribute msg)
-    , multiInputItemRemovable: Maybe (item -> Bool)
+    , multiInputItemRemovable : Maybe (item -> Bool)
     , notFound : String
     , notFoundAttrs : List (Attribute msg)
     , notFoundShown : Bool
     , onFocus : Maybe msg
     , onBlur : Maybe msg
     , onEsc : Maybe msg
+    , onArrowUp : Maybe msg
+    , onArrowDown : Maybe msg
     , onQueryChange : Maybe (String -> msg)
     , onRemoveItem : Maybe (item -> msg)
     , onSelect : Maybe item -> msg
+    , preserveQueryOnFocus : Bool
     , prompt : String
     , promptAttrs : List (Attribute msg)
     , removeItemSvgAttrs : List (Attribute msg)
+    , rootAttrs : List (Attribute msg)
     , scoreThreshold : Int
     , selectedItemAttrs : List (Attribute msg)
     , toLabel : item -> String
@@ -87,12 +91,16 @@ newConfig requiredConfig =
     , onFocus = Nothing
     , onBlur = Nothing
     , onEsc = Nothing
+    , onArrowUp = Nothing
+    , onArrowDown = Nothing
     , onQueryChange = Nothing
     , onRemoveItem = Nothing
     , onSelect = requiredConfig.onSelect
+    , preserveQueryOnFocus = False
     , prompt = ""
     , promptAttrs = []
     , removeItemSvgAttrs = []
+    , rootAttrs = []
     , scoreThreshold = 2000
     , selectedItemAttrs = []
     , toLabel = requiredConfig.toLabel

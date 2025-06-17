@@ -1,5 +1,12 @@
 # Changelog
 
+## 7.0.0
+
+- Add `withPreserveQueryOnFocus` to control whether the query is cleared when focusing the input. When `True`, clicking on the input will preserve the existing query even when `emptySearch` is enabled.
+- Add `withOnArrowUp` and `withOnArrowDown` callbacks for when arrow keys are pressed during navigation.
+- Modify `withItemHtml` to accept the current query as a parameter: `(Maybe String -> item -> Html msg)` instead of `(item -> Html msg)`.
+- Add `withRootAttrs` and `withRootMoreAttrs` to configure attributes for the root container element.
+
 ## 6.4.0
 
 - Add `withMultiInputItemRemovable`. https://github.com/sporto/elm-select/pull/60

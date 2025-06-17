@@ -1,18 +1,14 @@
 module Select.Select.Input.Multi exposing (view)
 
-import Html exposing (..)
+import Html exposing (Html, div, input, text)
 import Html.Attributes
     exposing
-        ( attribute
-        , autocomplete
-        , class
-        , id
+        ( class
         , placeholder
-        , style
         , value
         )
 import Select.Config exposing (Config)
-import Select.Messages as Msg exposing (Msg)
+import Select.Messages as Msg
 import Select.Models exposing (State)
 import Select.Select.RemoveItem as RemoveItem
 import Select.Shared as Shared exposing (classNames)
@@ -35,56 +31,61 @@ view config model availableItems selected maybeMatchedItems =
         selected
     , input
         (Shared.inputAttributes config model availableItems selected maybeMatchedItems
-            ++ [ value val ]
             ++ (if List.isEmpty selected then
                     [ placeholder config.prompt ]
 
                 else
                     []
                )
+            ++ [ value val ]
         )
         []
     ]
 
 
+currentSelection : Config msg item -> List item -> Html msg
 currentSelection config selected =
     div
-        ([ class classNames.multiInputItemContainer ]
-            ++ config.multiInputItemContainerAttrs
+        (class classNames.multiInputItemContainer
+            :: config.multiInputItemContainerAttrs
         )
         (List.map
-            (currentSelection_item config)
+            (currentSelectionItem config)
             selected
         )
 
 
-currentSelection_item config item =
+currentSelectionItem : Config msg item -> item -> Html msg
+currentSelectionItem config item =
     div
-        ([ class classNames.multiInputItem ]
-            ++ config.multiInputItemAttrs
+        (class classNames.multiInputItem
+            :: config.multiInputItemAttrs
         )
         [ div
             [ class classNames.multiInputItemText ]
             [ text (config.toLabel item) ]
-        , currentSelection_item_maybeClear
+        , currentSelectionItemMaybeClear
             config
             item
         ]
 
 
-currentSelection_item_maybeClear config item =
+currentSelectionItemMaybeClear : Config msg item -> item -> Html msg
+currentSelectionItemMaybeClear config item =
     case config.onRemoveItem of
         Nothing ->
             text ""
 
         Just _ ->
-            currentSelection_item_clear
+            currentSelectionItemClear
                 config
                 item
 
 
-currentSelection_item_clear config item =
+currentSelectionItemClear : Config msg item -> item -> Html msg
+currentSelectionItemClear config item =
     let
+        removableHtml : Html msg
         removableHtml =
             div
                 [ class classNames.multiInputItemRemove
