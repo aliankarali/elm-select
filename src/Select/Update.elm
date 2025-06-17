@@ -1,7 +1,7 @@
 module Select.Update exposing (update)
 
 import Select.Config exposing (Config)
-import Select.Messages exposing (..)
+import Select.Messages exposing (Msg(..))
 import Select.Models exposing (State)
 import Task
 
@@ -9,6 +9,7 @@ import Task
 update : Config msg item -> Msg item -> State -> ( State, Cmd msg )
 update config msg model =
     let
+        queryChangeCmd : String -> Cmd msg
         queryChangeCmd value =
             case config.onQueryChange of
                 Nothing ->
@@ -30,11 +31,12 @@ update config msg model =
 
                 Just escMessage ->
                     Task.succeed Nothing
-                        |> Task.perform (\x -> escMessage)
+                        |> Task.perform (\_ -> escMessage)
             )
 
         OnDownArrow ->
             let
+                newHighlightedItem : Maybe Int
                 newHighlightedItem =
                     case model.highlightedItem of
                         Nothing ->
@@ -50,21 +52,22 @@ update config msg model =
 
                 Just arrowDownMessage ->
                     Task.succeed Nothing
-                        |> Task.perform (\x -> arrowDownMessage)
+                        |> Task.perform (\_ -> arrowDownMessage)
             )
 
         OnUpArrow ->
             let
+                newHighlightedItem : Maybe Int
                 newHighlightedItem =
-                    case model.highlightedItem of
-                        Nothing ->
-                            Nothing
+                    model.highlightedItem
+                        |> Maybe.andThen
+                            (\n ->
+                                if n == 0 then
+                                    Nothing
 
-                        Just 0 ->
-                            Nothing
-
-                        Just n ->
-                            Just (n - 1)
+                                else
+                                    Just (n - 1)
+                            )
             in
             ( { model | highlightedItem = newHighlightedItem }
             , case config.onArrowUp of
@@ -73,11 +76,12 @@ update config msg model =
 
                 Just arrowUpMessage ->
                     Task.succeed Nothing
-                        |> Task.perform (\x -> arrowUpMessage)
+                        |> Task.perform (\_ -> arrowUpMessage)
             )
 
         OnFocus ->
             let
+                cmd : Cmd msg
                 cmd =
                     case config.onFocus of
                         Nothing ->
@@ -85,27 +89,22 @@ update config msg model =
 
                         Just focusMessage ->
                             Task.succeed Nothing
-                                |> Task.perform (\x -> focusMessage)
+                                |> Task.perform (\_ -> focusMessage)
             in
-            case config.emptySearch of
-                True ->
-                    if config.preserveQueryOnFocus then
-                        ( model, cmd )
-
-                    else
-                        ( { model | query = Just "" }
-                        , Cmd.batch
-                            [ cmd
-                            , if config.emptySearch then
-                                queryChangeCmd ""
-
-                              else
-                                Cmd.none
-                            ]
-                        )
-
-                False ->
+            if config.emptySearch then
+                if config.preserveQueryOnFocus then
                     ( model, cmd )
+
+                else
+                    ( { model | query = Just "" }
+                    , Cmd.batch
+                        [ cmd
+                        , queryChangeCmd ""
+                        ]
+                    )
+
+            else
+                ( model, cmd )
 
         OnBlur ->
             ( { model | query = Nothing }
@@ -115,11 +114,12 @@ update config msg model =
 
                 Just blurMessage ->
                     Task.succeed Nothing
-                        |> Task.perform (\x -> blurMessage)
+                        |> Task.perform (\_ -> blurMessage)
             )
 
         OnClear ->
             let
+                cmd : Cmd msg
                 cmd =
                     Task.succeed Nothing
                         |> Task.perform config.onSelect
@@ -128,6 +128,7 @@ update config msg model =
 
         OnRemoveItem item ->
             let
+                cmd : Cmd msg
                 cmd =
                     case config.onRemoveItem of
                         Just onRemoveItem ->
@@ -141,14 +142,17 @@ update config msg model =
 
         OnQueryChange value ->
             let
+                transformedValue : String
                 transformedValue =
                     value
                         |> config.transformInput
 
+                transformedQuery : String
                 transformedQuery =
                     transformedValue
                         |> config.transformQuery
 
+                cmd : Cmd msg
                 cmd =
                     if not (String.isEmpty transformedQuery) || config.emptySearch then
                         queryChangeCmd transformedQuery
@@ -160,6 +164,7 @@ update config msg model =
 
         OnSelect item ->
             let
+                cmd : Cmd msg
                 cmd =
                     Task.succeed (Just item)
                         |> Task.perform config.onSelect

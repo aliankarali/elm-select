@@ -12,7 +12,7 @@ import Expect
 import Html.Attributes exposing (attribute, placeholder, value)
 import Select
 import Select.Search as Search
-import Test exposing (..)
+import Test exposing (Test, describe, test)
 import Test.Html.Query as Query
 import Test.Html.Selector as Selector
 
@@ -52,6 +52,7 @@ toLabel iceCream =
             custom
 
 
+availableItems : List IceCream
 availableItems =
     [ Apple
     , Chocolate
@@ -62,20 +63,23 @@ availableItems =
     ]
 
 
+config : Select.Config () IceCream
 config =
     Select.newConfig
         { onSelect = always ()
         , toLabel = toLabel
-        , filter = \query items -> Just items
+        , filter = \_ items -> Just items
         , toMsg = always ()
         }
         |> Select.withPrompt "Select a flavour"
 
 
+model : Select.State
 model =
     Select.init "id"
 
 
+inputTests : Test
 inputTests =
     describe "input"
         [ test "It renders" <|
@@ -108,6 +112,7 @@ inputTests =
         ]
 
 
+testEqual : String -> a -> a -> Test
 testEqual testCase a b =
     test testCase <|
         \_ ->
@@ -116,6 +121,7 @@ testEqual testCase a b =
                 b
 
 
+menuTests : Test
 menuTests =
     describe "menu"
         [ test "It shows the custom item" <|
@@ -158,8 +164,10 @@ menuTests =
         ]
 
 
+filterItemsTests : Test
 filterItemsTests =
     let
+        args : { filter : String -> List String -> Maybe (List String), query : String, toLabel : String -> String, valueSeparators : List String }
         args =
             { filter = \query items -> List.filter ((==) query) items |> Just
             , query = ""

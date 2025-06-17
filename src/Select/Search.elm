@@ -12,35 +12,34 @@ then no search has been done and we shouldn't show the menu.
 -}
 matchedItemsWithCutoff : Config msg item -> Maybe String -> List item -> List item -> Maybe (List item)
 matchedItemsWithCutoff config maybeQuery availableItems selectedItems =
-    case maybeQuery of
-        Nothing ->
-            Nothing
+    maybeQuery
+        |> Maybe.andThen
+            (\query ->
+                if query == "" then
+                    if config.emptySearch then
+                        filterSelectedItemsWhenMulti
+                            config
+                            availableItems
+                            selectedItems
+                            |> maybeCuttoff config
+                            |> Just
 
-        {- When emptySearch is On, onBlur will set query to Just "" -}
-        Just "" ->
-            if config.emptySearch then
-                filterSelectedItemsWhenMulti
-                    config
-                    availableItems
-                    selectedItems
-                    |> maybeCuttoff config
-                    |> Just
+                    else
+                        Nothing
 
-            else
-                Nothing
-
-        Just query ->
-            filterSelectedItemsWhenMulti
-                config
-                availableItems
-                selectedItems
-                |> filterItems
-                    { filter = config.filter
-                    , query = query
-                    , toLabel = config.toLabel
-                    , valueSeparators = config.valueSeparators
-                    }
-                |> Maybe.map (maybeCuttoff config)
+                else
+                    filterSelectedItemsWhenMulti
+                        config
+                        availableItems
+                        selectedItems
+                        |> filterItems
+                            { filter = config.filter
+                            , query = query
+                            , toLabel = config.toLabel
+                            , valueSeparators = config.valueSeparators
+                            }
+                        |> Maybe.map (maybeCuttoff config)
+            )
 
 
 type alias FilterArgs item =
@@ -58,9 +57,11 @@ We want to search for each of those (not the combined string)
 filterItems : FilterArgs item -> List item -> Maybe (List item)
 filterItems args items =
     let
+        queries : List String
         queries =
             Shared.splitWithSeparators args.valueSeparators args.query
 
+        results : List (Maybe (List item))
         results =
             queries
                 |> List.map (\query_ -> args.filter query_ items)

@@ -133,6 +133,7 @@ update msg model =
 
         SelectMsg subMsg ->
             let
+                ( updated, cmd ) : ( Select.State, Cmd Msg )
                 ( updated, cmd ) =
                     Select.update selectConfig subMsg model.selectState
             in
@@ -145,6 +146,7 @@ update msg model =
 view : Model -> Html Msg
 view model =
     let
+        selectedCharacters : List Character
         selectedCharacters =
             case model.selectedCharacterId of
                 Nothing ->
@@ -154,6 +156,7 @@ view model =
                     model.characters
                         |> List.filter (\character -> character == id)
 
+        select : Html Msg
         select =
             Select.view
                 selectConfig

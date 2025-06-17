@@ -285,6 +285,7 @@ selectConfigColor =
         }
 
 
+selectConfigMulti : Select.Config (Example.Msg Color.Color) Color.Color
 selectConfigMulti =
     selectConfigColor
         |> Select.withMultiSelection True
@@ -294,6 +295,7 @@ selectConfigMulti =
         |> Select.withPrompt "Select a color"
 
 
+selectConfigEmptySearch : Select.Config (Example.Msg Movie.Movie) Movie.Movie
 selectConfigEmptySearch =
     Select.newConfig
         { onSelect = Example.OnSelect
@@ -309,6 +311,7 @@ selectConfigEmptySearch =
         |> Select.withClearHtml (Just (text "X"))
 
 
+selectConfigEmptySearchClear : Select.Config (Example.Msg Movie.Movie) Movie.Movie
 selectConfigEmptySearchClear =
     Select.newConfig
         { onSelect = Example.OnSelect
@@ -324,6 +327,7 @@ selectConfigEmptySearchClear =
         |> Select.withClearHtml (Just (text "X"))
 
 
+selectConfigFocusBlurEsc : Select.Config (Example.Msg Movie.Movie) Movie.Movie
 selectConfigFocusBlurEsc =
     selectConfigMovie
         |> Select.withOnFocus Example.OnFocus
@@ -331,6 +335,7 @@ selectConfigFocusBlurEsc =
         |> Select.withOnEsc Example.OnEsc
 
 
+selectConfigFocusBlurEscArrow : Select.Config (Example.Msg Movie.Movie) Movie.Movie
 selectConfigFocusBlurEscArrow =
     selectConfigMovie
         |> Select.withOnFocus Example.OnFocus
@@ -340,6 +345,7 @@ selectConfigFocusBlurEscArrow =
         |> Select.withOnArrowDown Example.OnArrowDown
 
 
+selectConfigCustom : Select.Config (Example.Msg Movie.Movie) Movie.Movie
 selectConfigCustom =
     selectConfigMovie
         |> Select.withCustomInput

@@ -97,7 +97,7 @@ This is the element that wraps the selected item(s) and the input
 
 -}
 
-import Html exposing (..)
+import Html exposing (Attribute, Html)
 import Select.Config as Config
 import Select.Messages as Messages
 import Select.Models as Models
@@ -1060,8 +1060,7 @@ update config msg model =
 
         model_ =
             unwrapModel model
-    in
-    let
+
         ( mdl, cmd ) =
             Select.Update.update config_ msg_ model_
     in

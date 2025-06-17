@@ -59,6 +59,7 @@ update msg model =
     case msg of
         OnSelect maybeColor ->
             let
+                selected : List item
                 selected =
                     maybeColor
                         |> Maybe.map (List.singleton >> List.append model.selected)
@@ -68,6 +69,7 @@ update msg model =
 
         OnRemoveItem colorToRemove ->
             let
+                selected : List item
                 selected =
                     List.filter (\curColor -> curColor /= colorToRemove)
                         model.selected
@@ -106,11 +108,13 @@ update msg model =
 view : Model item -> String -> String -> Html (Msg item)
 view model title prompt =
     let
+        currentSelection : Html (Msg item)
         currentSelection =
             p
                 []
                 [ text (String.join ", " <| List.map model.itemToLabel model.selected) ]
 
+        select : Html (Msg item)
         select =
             Select.view
                 model.selectConfig

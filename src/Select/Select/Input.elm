@@ -1,6 +1,6 @@
 module Select.Select.Input exposing (view)
 
-import Html exposing (..)
+import Html exposing (Html, div, input, text)
 import Html.Attributes
     exposing
         ( class
@@ -8,7 +8,7 @@ import Html.Attributes
         , value
         )
 import Select.Config exposing (Config)
-import Select.Messages as Msg exposing (Msg)
+import Select.Messages as Msg
 import Select.Models exposing (State)
 import Select.Select.Clear as Clear
 import Select.Select.Input.Multi as Multi
@@ -26,6 +26,7 @@ view config model availableItems selectedItems maybeMatchedItems =
             else
                 clear config
 
+        input : List (Html msg)
         input =
             if config.isMultiSelect then
                 Multi.view
@@ -44,12 +45,13 @@ view config model availableItems selectedItems maybeMatchedItems =
                     maybeMatchedItems
     in
     div
-        ([ class classNames.inputWrapper ]
-            ++ config.inputWrapperAttrs
+        (class classNames.inputWrapper
+            :: config.inputWrapperAttrs
         )
         (input ++ [ maybeClear ])
 
 
+clear : Config msg item -> Html msg
 clear config =
     div
         ([ class classNames.clear
@@ -70,6 +72,7 @@ singleInput :
     -> List (Html msg)
 singleInput config model availableItems selectedItems maybeMatchedItems =
     let
+        val : String
         val =
             case model.query of
                 Nothing ->

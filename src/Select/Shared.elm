@@ -21,13 +21,32 @@ import Select.Models exposing (State)
 import Set exposing (Set)
 
 
+type alias ClassNames =
+    { clear : String
+    , input : String
+    , inputWrapper : String
+    , menu : String
+    , menuAnchor : String
+    , menuItem : String
+    , menuItemSelectable : String
+    , multiInputItem : String
+    , multiInputItemContainer : String
+    , multiInputItemRemove : String
+    , multiInputItemText : String
+    , root : String
+    , underline : String
+    , underlineWrapper : String
+    }
+
+
+classNames : ClassNames
 classNames =
     { root = "elm-select"
     , inputWrapper = "elm-select-input-wrapper"
     , input = "elm-select-input"
-    , clear = "elm-select-clear"
     , underline = "elm-select-input-underline"
     , underlineWrapper = "elm-select-input-underline-wrapper"
+    , clear = "elm-select-clear"
 
     -- Multi input
     , multiInputItemContainer = "elm-select-multi-input-item-container"
@@ -35,7 +54,6 @@ classNames =
     , multiInputItemText = "elm-select-multi-input-item-text"
     , multiInputItemRemove = "elm-select-multi-item-remove"
 
-    --
     -- Menu
     , menu = "elm-select-menu"
     , menuAnchor = "elm-select-menu-anchor"
@@ -49,19 +67,20 @@ referenceDataName =
     "data-select-id"
 
 
-referenceAttr : Config msg item -> State -> Attribute msg2
-referenceAttr config model =
+referenceAttr : State -> Attribute msg2
+referenceAttr model =
     attribute referenceDataName model.id
 
 
 difference : List item -> List item -> List item
 difference listA listB =
-    List.filter (\x -> not <| List.any (\y -> x == y) listB) listA
+    List.filter (\x -> not <| List.member x listB) listA
 
 
 inputAttributes : Config msg item -> State -> List item -> List item -> Maybe (List item) -> List (Html.Attribute msg)
-inputAttributes config model availableItems selectedItems maybeMatchedItems =
+inputAttributes config model _ selectedItems maybeMatchedItems =
     let
+        promptAttrs : List (Html.Attribute msg)
         promptAttrs =
             if List.isEmpty selectedItems then
                 config.promptAttrs
@@ -72,29 +91,28 @@ inputAttributes config model availableItems selectedItems maybeMatchedItems =
         -- item that will be selected if enter if pressed
         preselectedItem : Maybe item
         preselectedItem =
-            case maybeMatchedItems of
-                Nothing ->
-                    Nothing
+            maybeMatchedItems
+                |> Maybe.andThen
+                    (\matchedItems ->
+                        case model.highlightedItem of
+                            Nothing ->
+                                List.head matchedItems
 
-                Just matchedItems ->
-                    case model.highlightedItem of
-                        Nothing ->
-                            List.head matchedItems
-
-                        Just n ->
-                            Array.fromList matchedItems
-                                |> Array.get (remainderBy (List.length matchedItems) n)
+                            Just n ->
+                                Array.fromList matchedItems
+                                    |> Array.get (remainderBy (List.length matchedItems) n)
+                    )
     in
     [ autocomplete False
     , attribute "autocorrect" "off" -- for mobile Safari
-    , onBlurAttribute config model |> Html.Attributes.map config.toMsg
+    , onBlurAttribute model |> Html.Attributes.map config.toMsg
     , onKeyUpAttribute preselectedItem |> Html.Attributes.map config.toMsg
     , onKeyPressAttribute preselectedItem |> Html.Attributes.map config.toMsg
     , onInput Msg.OnQueryChange |> Html.Attributes.map config.toMsg
     , onFocus Msg.OnFocus |> Html.Attributes.map config.toMsg
-    , referenceAttr config model
+    , referenceAttr model
+    , class classNames.input
     ]
-        ++ [ class classNames.input ]
         ++ config.inputAttrs
         ++ promptAttrs
 
@@ -108,6 +126,7 @@ onClickWithoutPropagation msg =
 onKeyPressAttribute : Maybe item -> Attribute (Msg item)
 onKeyPressAttribute maybeItem =
     let
+        fn : Int -> Decode.Decoder (Msg item)
         fn code =
             case code of
                 -- Tab
@@ -134,6 +153,7 @@ onKeyPressAttribute maybeItem =
 onKeyUpAttribute : Maybe item -> Attribute (Msg item)
 onKeyUpAttribute maybeItem =
     let
+        selectItem : Decode.Decoder (Msg item)
         selectItem =
             case maybeItem of
                 Nothing ->
@@ -142,6 +162,7 @@ onKeyUpAttribute maybeItem =
                 Just item ->
                     Decode.succeed (Msg.OnSelect item)
 
+        fn : Int -> Decode.Decoder (Msg item)
         fn code =
             case code of
                 13 ->
@@ -165,12 +186,14 @@ onKeyUpAttribute maybeItem =
         )
 
 
-onBlurAttribute : Config msg item -> State -> Attribute (Msg item)
-onBlurAttribute config state =
+onBlurAttribute : State -> Attribute (Msg item)
+onBlurAttribute state =
     let
+        dataDecoder : Decode.Decoder String
         dataDecoder =
             Decode.at [ "relatedTarget", "attributes", referenceDataName, "value" ] Decode.string
 
+        attrToMsg : String -> Msg item
         attrToMsg attr =
             if attr == state.id then
                 Msg.NoOp
@@ -178,6 +201,7 @@ onBlurAttribute config state =
             else
                 Msg.OnBlur
 
+        blur : Decode.Decoder (Msg item)
         blur =
             Decode.maybe dataDecoder
                 |> Decode.map (Maybe.map attrToMsg)
@@ -193,6 +217,7 @@ splitWithSeparators separators phrase =
 
     else
         let
+            separatorRegex : Regex.Regex
             separatorRegex =
                 separators
                     |> String.join "|"
@@ -216,6 +241,7 @@ uniqueHelper f existing remaining accumulator =
 
         first :: rest ->
             let
+                computedFirst : comparable
                 computedFirst =
                     f first
             in

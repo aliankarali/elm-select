@@ -3,11 +3,11 @@ module Select.Select.Item exposing
     , viewNotFound
     )
 
-import Html exposing (..)
+import Html exposing (Html, div, text)
 import Html.Attributes exposing (attribute, class)
 import Html.Events exposing (onMouseDown)
 import Select.Config exposing (Config)
-import Select.Messages exposing (..)
+import Select.Messages exposing (Msg(..))
 import Select.Models exposing (State)
 import Select.Shared exposing (classNames, referenceAttr)
 
@@ -15,6 +15,7 @@ import Select.Shared exposing (classNames, referenceAttr)
 view : Config msg item -> State -> Int -> List item -> Int -> item -> Html msg
 view config state itemCount selectedItems index item =
     let
+        highlightedItemAttrs : List (Html.Attribute msg)
         highlightedItemAttrs =
             case state.highlightedItem of
                 Nothing ->
@@ -28,6 +29,7 @@ view config state itemCount selectedItems index item =
                     else
                         []
 
+        selectedAttrs : List (Html.Attribute msg)
         selectedAttrs =
             if isSelected then
                 config.selectedItemAttrs
@@ -35,12 +37,15 @@ view config state itemCount selectedItems index item =
             else
                 []
 
+        isSelected : Bool
         isSelected =
             List.member item selectedItems
 
+        label : String
         label =
             config.toLabel item
 
+        itemHtml : Html msg
         itemHtml =
             case config.itemHtml of
                 Nothing ->
@@ -54,7 +59,7 @@ view config state itemCount selectedItems index item =
          , class classNames.menuItemSelectable
          , attribute "data-select-item" label
          , onMouseDown (config.toMsg (OnSelect item))
-         , referenceAttr config state
+         , referenceAttr state
          ]
             ++ highlightedItemAttrs
             ++ selectedAttrs
@@ -70,5 +75,5 @@ viewNotFound config =
 
     else
         div
-            ([ class classNames.menuItem ] ++ config.notFoundAttrs)
+            (class classNames.menuItem :: config.notFoundAttrs)
             [ text config.notFound ]
