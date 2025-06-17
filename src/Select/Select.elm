@@ -50,9 +50,11 @@ view config state availableItems selectedItems =
                 selectedItems
     in
     div
-        [ id state.id
+        ([ id state.id
         , class classNames.root
         ]
+            ++ config.rootAttrs
+        )
         [ Select.Select.Input.view
             config
             state

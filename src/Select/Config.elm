@@ -51,6 +51,7 @@ type alias Config msg item =
     , prompt : String
     , promptAttrs : List (Attribute msg)
     , removeItemSvgAttrs : List (Attribute msg)
+    , rootAttrs : List (Attribute msg)
     , scoreThreshold : Int
     , selectedItemAttrs : List (Attribute msg)
     , toLabel : item -> String
@@ -93,6 +94,7 @@ newConfig requiredConfig =
     , prompt = ""
     , promptAttrs = []
     , removeItemSvgAttrs = []
+    , rootAttrs = []
     , scoreThreshold = 2000
     , selectedItemAttrs = []
     , toLabel = requiredConfig.toLabel

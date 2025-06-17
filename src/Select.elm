@@ -7,6 +7,7 @@ module Select exposing
     , withClear, withClearAttrs, withClearMoreAttrs, withClearSvgClass, withClearHtml
     , withItemAttrs, withItemMoreAttrs, withItemHtml, withHighlightedItemAttrs, withHighlightedItemMoreAttrs, withItemSelectedAttrs, withItemSelectedMoreAttrs
     , withMenuAttrs, withMenuMoreAttrs
+    , withRootAttrs, withRootMoreAttrs
     , withNotFound, withNotFoundAttrs, withNotFoundMoreAttrs, withNotFoundShown
     , withPrompt, withPromptAttrs, withPromptMoreAttrs
     , init, queryFromState, withQuery
@@ -63,6 +64,11 @@ This is the element that wraps the selected item(s) and the input
 # Configure the menu
 
 @docs withMenuAttrs, withMenuMoreAttrs
+
+
+# Configure the root container
+
+@docs withRootAttrs, withRootMoreAttrs
 
 
 # Configure the not found message
@@ -630,6 +636,44 @@ withNotFoundShown shown config =
     let
         fn c =
             { c | notFoundShown = shown }
+    in
+    mapConfig fn config
+
+
+{-| Set attributes for the root container.
+This overrides any attributes already set in a previous call.
+
+    config
+        |> Select.withRootAttrs [ class "bg-white" ]
+
+-}
+withRootAttrs :
+    List (Attribute msg)
+    -> Config msg item
+    -> Config msg item
+withRootAttrs attrs config =
+    let
+        fn c =
+            { c | rootAttrs = attrs }
+    in
+    mapConfig fn config
+
+
+{-| Add attributes to the root container.
+This adds to existing attributes.
+
+    config
+        |> Select.withRootMoreAttrs [ class "bg-white" ]
+
+-}
+withRootMoreAttrs :
+    List (Attribute msg)
+    -> Config msg item
+    -> Config msg item
+withRootMoreAttrs attrs config =
+    let
+        fn c =
+            { c | rootAttrs = c.rootAttrs ++ attrs }
     in
     mapConfig fn config
 
