@@ -18,6 +18,7 @@ type alias Model =
     , exampleMulti : Example.Model Color.Color
     , exampleCustom : Example.Model Movie.Movie
     , exampleFocusBlurEsc : Example.Model Movie.Movie
+    , exampleFocusBlurEscArrow : Example.Model Movie.Movie
     }
 
 
@@ -64,6 +65,14 @@ initialModel =
             , selected = []
             , selectConfig = selectConfigFocusBlurEsc
             }
+    , exampleFocusBlurEscArrow =
+        Example.initialModel
+            { id = "exampleFocusBlurEscArrow"
+            , available = Movie.movies
+            , itemToLabel = Movie.toLabel
+            , selected = []
+            , selectConfig = selectConfigFocusBlurEscArrow
+            }
     }
 
 
@@ -85,6 +94,7 @@ type Msg
     | ExampleMultiMsg (Example.Msg Color.Color)
     | ExampleCustomMsg (Example.Msg Movie.Movie)
     | ExampleFocusBlurEscMsg (Example.Msg Movie.Movie)
+    | ExampleFocusBlurEscArrowMsg (Example.Msg Movie.Movie)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -156,6 +166,17 @@ update msg model =
             , Cmd.map ExampleFocusBlurEscMsg subCmd
             )
 
+        ExampleFocusBlurEscArrowMsg sub ->
+            let
+                ( subModel, subCmd ) =
+                    Example.update
+                        sub
+                        model.exampleFocusBlurEscArrow
+            in
+            ( { model | exampleFocusBlurEscArrow = subModel }
+            , Cmd.map ExampleFocusBlurEscArrowMsg subCmd
+            )
+
         NoOp ->
             ( model, Cmd.none )
 
@@ -198,6 +219,11 @@ view model =
             "OnFocus, OnBlur, OnEsc"
             "See these messages fire in the debugger"
             |> Html.map ExampleFocusBlurEscMsg
+        , Example.view
+            model.exampleFocusBlurEscArrow
+            "OnFocus, OnBlur, OnEsc, OnArrow"
+            "See these messages fire in the debugger"
+            |> Html.map ExampleFocusBlurEscArrowMsg
         ]
 
 
@@ -261,6 +287,15 @@ selectConfigFocusBlurEsc =
         |> Select.withOnFocus Example.OnFocus
         |> Select.withOnBlur Example.OnBlur
         |> Select.withOnEsc Example.OnEsc
+
+
+selectConfigFocusBlurEscArrow =
+    selectConfigMovie
+        |> Select.withOnFocus Example.OnFocus
+        |> Select.withOnBlur Example.OnBlur
+        |> Select.withOnEsc Example.OnEsc
+        |> Select.withOnArrowUp Example.OnArrowUp
+        |> Select.withOnArrowDown Example.OnArrowDown
 
 
 selectConfigCustom =

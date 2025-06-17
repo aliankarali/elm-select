@@ -45,6 +45,8 @@ type alias Config msg item =
     , onFocus : Maybe msg
     , onBlur : Maybe msg
     , onEsc : Maybe msg
+    , onArrowUp : Maybe msg
+    , onArrowDown : Maybe msg
     , onQueryChange : Maybe (String -> msg)
     , onRemoveItem : Maybe (item -> msg)
     , onSelect : Maybe item -> msg
@@ -88,6 +90,8 @@ newConfig requiredConfig =
     , onFocus = Nothing
     , onBlur = Nothing
     , onEsc = Nothing
+    , onArrowUp = Nothing
+    , onArrowDown = Nothing
     , onQueryChange = Nothing
     , onRemoveItem = Nothing
     , onSelect = requiredConfig.onSelect

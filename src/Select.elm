@@ -3,7 +3,7 @@ module Select exposing
     , newConfig, withCustomInput, withCutoff, withOnQuery, withEmptySearch, withTransformQuery, withTransformInput
     , withMultiSelection, withOnRemoveItem, withMultiInputItemContainerAttrs, withMultiInputItemContainerMoreAttrs, withMultiInputItemAttrs, withMultiInputItemMoreAttrs, withMultiInputItemRemovable
     , withInputWrapperAttrs, withInputWrapperMoreAttrs
-    , withInputAttrs, withInputMoreAttrs, withOnFocus, withOnBlur, withOnEsc, withValueSeparators
+    , withInputAttrs, withInputMoreAttrs, withOnFocus, withOnBlur, withOnEsc, withOnArrowUp, withOnArrowDown, withValueSeparators
     , withClear, withClearAttrs, withClearMoreAttrs, withClearSvgClass, withClearHtml
     , withItemAttrs, withItemMoreAttrs, withItemHtml, withHighlightedItemAttrs, withHighlightedItemMoreAttrs, withItemSelectedAttrs, withItemSelectedMoreAttrs
     , withMenuAttrs, withMenuMoreAttrs
@@ -48,7 +48,7 @@ This is the element that wraps the selected item(s) and the input
 
 # Configure the input
 
-@docs withInputAttrs, withInputMoreAttrs, withOnFocus, withOnBlur, withOnEsc, withValueSeparators
+@docs withInputAttrs, withInputMoreAttrs, withOnFocus, withOnBlur, withOnEsc, withOnArrowUp, withOnArrowDown, withValueSeparators
 
 
 # Configure the clear button
@@ -806,6 +806,36 @@ withOnEsc msg config =
     let
         fn c =
             { c | onEsc = Just msg }
+    in
+    mapConfig fn config
+
+
+{-| Add a callback for when the Up Arrow key is pressed.
+
+    config
+        |> Select.withOnArrowUp OnArrowUp
+
+-}
+withOnArrowUp : msg -> Config msg item -> Config msg item
+withOnArrowUp msg config =
+    let
+        fn c =
+            { c | onArrowUp = Just msg }
+    in
+    mapConfig fn config
+
+
+{-| Add a callback for when the Down Arrow key is pressed.
+
+    config
+        |> Select.withOnArrowDown OnArrowDown
+
+-}
+withOnArrowDown : msg -> Config msg item -> Config msg item
+withOnArrowDown msg config =
+    let
+        fn c =
+            { c | onArrowDown = Just msg }
     in
     mapConfig fn config
 

@@ -43,7 +43,15 @@ update config msg model =
                         Just n ->
                             Just (n + 1)
             in
-            ( { model | highlightedItem = newHightlightedItem }, Cmd.none )
+            ( { model | highlightedItem = newHightlightedItem }
+            , case config.onArrowDown of
+                Nothing ->
+                    Cmd.none
+
+                Just arrowDownMessage ->
+                    Task.succeed Nothing
+                        |> Task.perform (\x -> arrowDownMessage)
+            )
 
         OnUpArrow ->
             let
@@ -58,7 +66,15 @@ update config msg model =
                         Just n ->
                             Just (n - 1)
             in
-            ( { model | highlightedItem = newHightlightedItem }, Cmd.none )
+            ( { model | highlightedItem = newHightlightedItem }
+            , case config.onArrowUp of
+                Nothing ->
+                    Cmd.none
+
+                Just arrowUpMessage ->
+                    Task.succeed Nothing
+                        |> Task.perform (\x -> arrowUpMessage)
+            )
 
         OnFocus ->
             let

@@ -50,6 +50,8 @@ type Msg item
     | OnFocus
     | OnBlur
     | OnEsc
+    | OnArrowUp
+    | OnArrowDown
 
 
 update : Msg item -> Model item -> ( Model item, Cmd (Msg item) )
@@ -92,6 +94,12 @@ update msg model =
             ( model, Cmd.none )
 
         OnEsc ->
+            ( model, Cmd.none )
+
+        OnArrowUp ->
+            ( model, Cmd.none )
+
+        OnArrowDown ->
             ( model, Cmd.none )
 
 
