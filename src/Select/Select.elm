@@ -51,8 +51,8 @@ view config state availableItems selectedItems =
     in
     div
         ([ id state.id
-        , class classNames.root
-        ]
+         , class classNames.root
+         ]
             ++ config.rootAttrs
         )
         [ Select.Select.Input.view
