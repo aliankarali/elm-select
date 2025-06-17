@@ -1,9 +1,9 @@
 {
   "type": "package",
-  "name": "sporto/elm-select",
+  "name": "aliankarali/elm-select",
   "summary": "A selection input with auto-completion",
   "license": "MIT",
-  "version": "7.0.0",
+  "version": "1.0.0",
   "exposed-modules": ["Select"],
   "elm-version": "0.19.0 <= v < 0.20.0",
   "dependencies": {
