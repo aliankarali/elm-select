@@ -35,7 +35,7 @@ update config msg model =
 
         OnDownArrow ->
             let
-                newHightlightedItem =
+                newHighlightedItem =
                     case model.highlightedItem of
                         Nothing ->
                             Just 0
@@ -43,7 +43,7 @@ update config msg model =
                         Just n ->
                             Just (n + 1)
             in
-            ( { model | highlightedItem = newHightlightedItem }
+            ( { model | highlightedItem = newHighlightedItem }
             , case config.onArrowDown of
                 Nothing ->
                     Cmd.none
@@ -55,7 +55,7 @@ update config msg model =
 
         OnUpArrow ->
             let
-                newHightlightedItem =
+                newHighlightedItem =
                     case model.highlightedItem of
                         Nothing ->
                             Nothing
@@ -66,7 +66,7 @@ update config msg model =
                         Just n ->
                             Just (n - 1)
             in
-            ( { model | highlightedItem = newHightlightedItem }
+            ( { model | highlightedItem = newHighlightedItem }
             , case config.onArrowUp of
                 Nothing ->
                     Cmd.none
