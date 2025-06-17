@@ -1,6 +1,6 @@
 module Select exposing
     ( RequiredConfig, Config, State, Msg
-    , newConfig, withCustomInput, withCutoff, withOnQuery, withEmptySearch, withTransformQuery, withTransformInput
+    , newConfig, withCustomInput, withCutoff, withOnQuery, withEmptySearch, withPreserveQueryOnFocus, withTransformQuery, withTransformInput
     , withMultiSelection, withOnRemoveItem, withMultiInputItemContainerAttrs, withMultiInputItemContainerMoreAttrs, withMultiInputItemAttrs, withMultiInputItemMoreAttrs, withMultiInputItemRemovable
     , withInputWrapperAttrs, withInputWrapperMoreAttrs
     , withInputAttrs, withInputMoreAttrs, withOnFocus, withOnBlur, withOnEsc, withOnArrowUp, withOnArrowDown, withValueSeparators
@@ -31,7 +31,7 @@ See live demo [here](https://sporto.github.io/elm-select)
 
 # Configuration
 
-@docs newConfig, withCustomInput, withCutoff, withOnQuery, withEmptySearch, withTransformQuery, withTransformInput
+@docs newConfig, withCustomInput, withCutoff, withOnQuery, withEmptySearch, withPreserveQueryOnFocus, withTransformQuery, withTransformInput
 
 
 # Configure Multi Select mode
@@ -164,6 +164,24 @@ withEmptySearch emptySearch config =
     let
         fn c =
             { c | emptySearch = emptySearch }
+    in
+    mapConfig fn config
+
+
+{-| Preserve the current query when the input receives focus.
+When True, clicking on the input will not clear the existing query.
+When False, clicking on the input will clear the query if emptySearch is enabled.
+
+Default is False.
+
+    Select.withPreserveQueryOnFocus True config
+
+-}
+withPreserveQueryOnFocus : Bool -> Config msg item -> Config msg item
+withPreserveQueryOnFocus preserveQueryOnFocus config =
+    let
+        fn c =
+            { c | preserveQueryOnFocus = preserveQueryOnFocus }
     in
     mapConfig fn config
 

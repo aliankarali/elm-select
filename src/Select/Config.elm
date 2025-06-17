@@ -50,6 +50,7 @@ type alias Config msg item =
     , onQueryChange : Maybe (String -> msg)
     , onRemoveItem : Maybe (item -> msg)
     , onSelect : Maybe item -> msg
+    , preserveQueryOnFocus : Bool
     , prompt : String
     , promptAttrs : List (Attribute msg)
     , removeItemSvgAttrs : List (Attribute msg)
@@ -95,6 +96,7 @@ newConfig requiredConfig =
     , onQueryChange = Nothing
     , onRemoveItem = Nothing
     , onSelect = requiredConfig.onSelect
+    , preserveQueryOnFocus = False
     , prompt = ""
     , promptAttrs = []
     , removeItemSvgAttrs = []

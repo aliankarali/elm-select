@@ -89,16 +89,20 @@ update config msg model =
             in
             case config.emptySearch of
                 True ->
-                    ( { model | query = Just "" }
-                    , Cmd.batch
-                        [ cmd
-                        , if config.emptySearch then
-                            queryChangeCmd ""
+                    if config.preserveQueryOnFocus then
+                        ( model, cmd )
 
-                          else
-                            Cmd.none
-                        ]
-                    )
+                    else
+                        ( { model | query = Just "" }
+                        , Cmd.batch
+                            [ cmd
+                            , if config.emptySearch then
+                                queryChangeCmd ""
+
+                              else
+                                Cmd.none
+                            ]
+                        )
 
                 False ->
                     ( model, cmd )

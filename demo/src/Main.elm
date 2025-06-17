@@ -15,6 +15,7 @@ type alias Model =
     { exampleBasic : Example.Model Movie.Movie
     , exampleAsync : ExampleAsync.Model
     , exampleEmptySearch : Example.Model Movie.Movie
+    , exampleEmptySearchClear : Example.Model Movie.Movie
     , exampleMulti : Example.Model Color.Color
     , exampleCustom : Example.Model Movie.Movie
     , exampleFocusBlurEsc : Example.Model Movie.Movie
@@ -40,6 +41,14 @@ initialModel =
             , itemToLabel = Movie.toLabel
             , selected = []
             , selectConfig = selectConfigEmptySearch
+            }
+    , exampleEmptySearchClear =
+        Example.initialModel
+            { id = "exampleEmptySearchClear"
+            , available = Movie.movies
+            , itemToLabel = Movie.toLabel
+            , selected = []
+            , selectConfig = selectConfigEmptySearchClear
             }
     , exampleMulti =
         Example.initialModel
@@ -91,6 +100,7 @@ type Msg
     | ExampleBasicMsg (Example.Msg Movie.Movie)
     | ExampleAsyncMsg ExampleAsync.Msg
     | ExampleEmptySearchMsg (Example.Msg Movie.Movie)
+    | ExampleEmptySearchClearMsg (Example.Msg Movie.Movie)
     | ExampleMultiMsg (Example.Msg Color.Color)
     | ExampleCustomMsg (Example.Msg Movie.Movie)
     | ExampleFocusBlurEscMsg (Example.Msg Movie.Movie)
@@ -131,6 +141,17 @@ update msg model =
             in
             ( { model | exampleEmptySearch = subModel }
             , Cmd.map ExampleEmptySearchMsg subCmd
+            )
+
+        ExampleEmptySearchClearMsg sub ->
+            let
+                ( subModel, subCmd ) =
+                    Example.update
+                        sub
+                        model.exampleEmptySearchClear
+            in
+            ( { model | exampleEmptySearchClear = subModel }
+            , Cmd.map ExampleEmptySearchClearMsg subCmd
             )
 
         ExampleMultiMsg sub ->
@@ -201,9 +222,14 @@ view model =
             |> Html.map ExampleAsyncMsg
         , Example.view
             model.exampleEmptySearch
-            "Show menu when search is empty"
+            "Show menu when search is empty (query preserved on focus)"
             "Select a movie"
             |> Html.map ExampleEmptySearchMsg
+        , Example.view
+            model.exampleEmptySearchClear
+            "Show menu when search is empty (query cleared on focus)"
+            "Select a movie"
+            |> Html.map ExampleEmptySearchClearMsg
         , Example.view
             model.exampleMulti
             "Multi"
@@ -277,6 +303,22 @@ selectConfigEmptySearch =
         }
         |> Select.withCutoff 12
         |> Select.withEmptySearch True
+        |> Select.withPreserveQueryOnFocus True
+        |> Select.withNotFound "No matches"
+        |> Select.withPrompt "Select a movie"
+        |> Select.withClearHtml (Just (text "X"))
+
+
+selectConfigEmptySearchClear =
+    Select.newConfig
+        { onSelect = Example.OnSelect
+        , toLabel = .label
+        , filter = Shared.filter 4 .label
+        , toMsg = Example.SelectMsg
+        }
+        |> Select.withCutoff 12
+        |> Select.withEmptySearch True
+        |> Select.withPreserveQueryOnFocus False
         |> Select.withNotFound "No matches"
         |> Select.withPrompt "Select a movie"
         |> Select.withClearHtml (Just (text "X"))
