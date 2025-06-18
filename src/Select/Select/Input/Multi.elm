@@ -18,10 +18,9 @@ view :
     Config msg item
     -> State
     -> List item
-    -> List item
     -> Maybe (List item)
     -> List (Html msg)
-view config model availableItems selected maybeMatchedItems =
+view config model selected maybeMatchedItems =
     let
         val =
             model.query |> Maybe.withDefault ""
@@ -30,7 +29,7 @@ view config model availableItems selected maybeMatchedItems =
         config
         selected
     , input
-        (Shared.inputAttributes config model availableItems selected maybeMatchedItems
+        (Shared.inputAttributes config model selected maybeMatchedItems
             ++ (if List.isEmpty selected then
                     [ placeholder config.prompt ]
 

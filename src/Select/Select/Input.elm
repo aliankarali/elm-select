@@ -15,8 +15,8 @@ import Select.Select.Input.Multi as Multi
 import Select.Shared as Shared exposing (classNames)
 
 
-view : Config msg item -> State -> List item -> List item -> Maybe (List item) -> Html msg
-view config model availableItems selectedItems maybeMatchedItems =
+view : Config msg item -> State -> List item -> Maybe (List item) -> Html msg
+view config model selectedItems maybeMatchedItems =
     let
         maybeClear : Html msg
         maybeClear =
@@ -32,7 +32,6 @@ view config model availableItems selectedItems maybeMatchedItems =
                 Multi.view
                     config
                     model
-                    availableItems
                     selectedItems
                     maybeMatchedItems
 
@@ -40,7 +39,6 @@ view config model availableItems selectedItems maybeMatchedItems =
                 singleInput
                     config
                     model
-                    availableItems
                     selectedItems
                     maybeMatchedItems
     in
@@ -67,10 +65,9 @@ singleInput :
     Config msg item
     -> State
     -> List item
-    -> List item
     -> Maybe (List item)
     -> List (Html msg)
-singleInput config model availableItems selectedItems maybeMatchedItems =
+singleInput config model selectedItems maybeMatchedItems =
     let
         val : String
         val =
@@ -85,6 +82,6 @@ singleInput config model availableItems selectedItems maybeMatchedItems =
                     query
     in
     [ input
-        (Shared.inputAttributes config model availableItems selectedItems maybeMatchedItems ++ [ value val, placeholder config.prompt ])
+        (Shared.inputAttributes config model selectedItems maybeMatchedItems ++ [ value val, placeholder config.prompt ])
         []
     ]

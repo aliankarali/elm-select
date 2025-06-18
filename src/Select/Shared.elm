@@ -77,8 +77,8 @@ difference listA listB =
     List.filter (\x -> not <| List.member x listB) listA
 
 
-inputAttributes : Config msg item -> State -> List item -> List item -> Maybe (List item) -> List (Html.Attribute msg)
-inputAttributes config model _ selectedItems maybeMatchedItems =
+inputAttributes : Config msg item -> State -> List item -> Maybe (List item) -> List (Html.Attribute msg)
+inputAttributes config model selectedItems maybeMatchedItems =
     let
         promptAttrs : List (Html.Attribute msg)
         promptAttrs =
@@ -109,7 +109,7 @@ inputAttributes config model _ selectedItems maybeMatchedItems =
     , onKeyUpAttribute preselectedItem |> Html.Attributes.map config.toMsg
     , onKeyPressAttribute preselectedItem |> Html.Attributes.map config.toMsg
     , onInput Msg.OnQueryChange |> Html.Attributes.map config.toMsg
-    , onFocus Msg.OnFocus |> Html.Attributes.map config.toMsg
+    , onFocus (Msg.OnFocus selectedItems) |> Html.Attributes.map config.toMsg
     , referenceAttr model
     , class classNames.input
     ]

@@ -58,7 +58,6 @@ view config state availableItems selectedItems =
         [ Select.Select.Input.view
             config
             state
-            availableItems
             selectedItems
             maybeMatchedItems
         , div [ class classNames.underlineWrapper ]
