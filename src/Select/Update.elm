@@ -79,7 +79,7 @@ update config msg model =
                         |> Task.perform (\_ -> arrowUpMessage)
             )
 
-        OnFocus ->
+        OnFocus selectedItems ->
             let
                 cmd : Cmd msg
                 cmd =
@@ -91,17 +91,13 @@ update config msg model =
                             Task.succeed Nothing
                                 |> Task.perform (\_ -> focusMessage)
             in
-            if config.emptySearch then
-                if config.preserveQueryOnFocus then
-                    ( model, cmd )
-
-                else
-                    ( { model | query = Just "" }
-                    , Cmd.batch
-                        [ cmd
-                        , queryChangeCmd ""
-                        ]
-                    )
+            if config.emptySearch && (not config.preserveQueryOnFocus || List.isEmpty selectedItems) then
+                ( { model | query = Just "" }
+                , Cmd.batch
+                    [ cmd
+                    , queryChangeCmd ""
+                    ]
+                )
 
             else
                 ( model, cmd )

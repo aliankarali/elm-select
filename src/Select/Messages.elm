@@ -3,7 +3,7 @@ module Select.Messages exposing (Msg(..))
 
 type Msg item
     = NoOp
-    | OnFocus
+    | OnFocus (List item)
     | OnBlur
     | OnClear
     | OnRemoveItem item
